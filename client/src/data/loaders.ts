@@ -275,16 +275,12 @@ export async function getGlobalData() {
     { encodeValuesOnly: true }
   );
 
-  const res = await fetch(`${getStrapiURL}/api/global?${query}`, {
+  const res = await fetch(`${getStrapiURL()}/api/global?${query}`, {
     headers: {
       Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
     },
     next: { revalidate: 60 }, // ISR caching
   });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch global settings");
-  }
 
   const json = await res.json();
   const attributes = json.data?.attributes;
