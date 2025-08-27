@@ -257,3 +257,45 @@ export async function getContentBySlug(slug: string, path: string) {
     });
     return fetchAPI(url.href, { method: "GET" });
 }
+
+// SEO
+
+export async function getGlobalData() {
+  const query = qs.stringify(
+    {
+      populate: {
+        favicon: { fields: ["url"] },
+        defaultSeo: {
+          populate: {
+            metaImage: { fields: ["url"] },
+          },
+        },
+      },
+    },
+    { encodeValuesOnly: true }
+  );
+
+  const res = await fetch(`${getStrapiURL}/api/global?${query}`, {
+    headers: {
+      Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
+    },
+    next: { revalidate: 60 }, // ISR caching
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch global settings");
+  }
+
+  const json = await res.json();
+  const attributes = json.data?.attributes;
+
+  return {
+    siteName: attributes?.siteName || "My Website",
+    favicon: attributes?.favicon?.data?.attributes?.url || "",
+    seo: {
+      metaTitle: attributes?.defaultSeo?.metaTitle || "",
+      metaDescription: attributes?.defaultSeo?.metaDescription || "",
+      metaImage: attributes?.defaultSeo?.metaImage?.data?.attributes?.url || "",
+    },
+  };
+}

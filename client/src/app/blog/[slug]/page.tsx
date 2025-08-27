@@ -2,13 +2,28 @@ import type { ArticleProps, Block } from "@/types";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatDate } from "@/utils/format-date";
-import { getContentBySlug } from "@/data/loaders";
+import { getContentBySlug, getGlobalData, getPageBySlug } from "@/data/loaders";
 
 import { HeroSection } from "@/components/blocks/HeroSection";
 import { th } from "zod/locales";
 import { BlockRenderer } from "@/components/BlockRender";
 import { Card, type CardProps } from "@/components/Card";
 import { ContentList } from "@/components/ContentList";
+import { getSeoMetadata } from "@/lib/seo";
+import type { Metadata } from "next";
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const [pageRes, global] = await Promise.all([
+    getPageBySlug(params.slug),
+    getGlobalData(),
+  ]);
+  const seo = pageRes?.data?.[0]?.attributes?.seo;
+  return getSeoMetadata({
+    pageSeo: seo,
+    globalSeo: global.seo,
+    favicon: global.favicon,
+  });
+}
 
 interface PageProps {
     params: Promise<{ slug: string }>;

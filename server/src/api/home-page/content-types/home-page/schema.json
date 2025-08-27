@@ -23,6 +23,11 @@
         "blocks.info-block",
         "blocks.hero-section"
       ]
+    },
+    "seo": {
+      "type": "component",
+      "component": "shared.seo",
+      "repeatable": true
     }
   }
 }

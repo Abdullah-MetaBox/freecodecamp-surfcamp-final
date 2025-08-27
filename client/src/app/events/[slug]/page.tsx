@@ -1,9 +1,24 @@
 import type { EventProps } from "@/types";
 import { ContentList } from "@/components/ContentList";
 import { Card, type CardProps } from "@/components/Card";
-import { getContentBySlug } from "@/data/loaders";
+import { getContentBySlug, getGlobalData, getPageBySlug } from "@/data/loaders";
 import { notFound } from "next/navigation";
 import { EventSignupForm } from "@/components/EventsSignupForm";
+import { Metadata } from "next";
+import { getSeoMetadata } from "@/lib/seo";
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const [pageRes, global] = await Promise.all([
+    getPageBySlug(params.slug),
+    getGlobalData(),
+  ]);
+  const seo = pageRes?.data?.[0]?.attributes?.seo;
+  return getSeoMetadata({
+    pageSeo: seo,
+    globalSeo: global.seo,
+    favicon: global.favicon,
+  });
+}
 
 async function loader(slug: string) {
     const { data } = await getContentBySlug(slug, "/api/events");
