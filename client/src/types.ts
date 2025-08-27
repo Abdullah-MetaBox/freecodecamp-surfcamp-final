@@ -132,3 +132,32 @@ export interface EventProps {
     createdAt: string;
     updatedAt: string;
 }
+
+// --- Strapi SEO Types ---
+
+export interface StrapiImage {
+  data?: {
+    attributes?: {
+      url?: string;
+      alternativeText?: string;
+    };
+  };
+}
+
+export interface StrapiSeo {
+  metaTitle?: string;
+  metaDescription?: string;
+  metaImage?: StrapiImage;
+  keywords?: string;
+  canonicalURL?: string;
+  metaRobots?: string;
+  metaViewport?: string;
+  structuredData?: any;
+  metaSocial?: any[];
+}
+
+export interface GlobalData {
+  siteName: string;
+  favicon: string;
+  seo: StrapiSeo;
+}
